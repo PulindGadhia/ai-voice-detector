@@ -24,7 +24,7 @@ RUN mkdir -p /app/data /app/uploads /app/models
 ENV HF_HOME=/app/models
 RUN python preload_model.py
 
-EXPOSE 8000
+EXPOSE 7860
 
 # Use Gunicorn with a 300-second timeout to handle slow CPU inference
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--timeout", "300", "--workers", "1", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:7860", "--timeout", "300", "--workers", "1", "app:app"]

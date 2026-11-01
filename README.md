@@ -1,3 +1,14 @@
+---
+title: AI Voice Detector
+emoji: 🎙️
+colorFrom: indigo
+colorTo: purple
+sdk: docker
+app_port: 7860
+short_description: Detect AI-generated vs human voices using Wav2Vec2
+pinned: true
+---
+
 # AI Voice Detector
 
 > **Every Voice Has a Story. Verify Its Origin.**
