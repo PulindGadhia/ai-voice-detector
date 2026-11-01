@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: ai-voice-detector
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: DEBUG
+        value: false
+    disk:
+      name: ai-voice-data
+      mountPath: /app/data
+      sizeGB: 1
+    healthCheckPath: /api/health

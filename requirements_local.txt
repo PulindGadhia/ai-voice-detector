@@ -1,0 +1,4 @@
+# Local development/runtime install from the project's single dependency manifest.
+# For CUDA-specific PyTorch, install the matching torch/torchaudio wheels first
+# using the command documented in Dockerfile.gpu, then run: python -m pip install .
+-e .

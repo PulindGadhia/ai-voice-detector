@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+build/
+dist/
+
+# Environments and secrets
+.venv/
+venv/
+.env
+.env.*
+
+# Model artifacts and generated data
+models/
+*.pth
+*.pt
+*.onnx
+*.ckpt
+uploads/
+runs/
+logs/
+checkpoints/
+data/*.db
+data/*.sqlite*
+*.log
+
+# Test and tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Editors / OS
+.DS_Store
+.vscode/
+.idea/

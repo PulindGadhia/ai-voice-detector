@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Voice Detector — Every Voice Has a Story</title>
+  <meta name="description" content="Analyze audio recordings to identify whether a voice is human or AI-generated.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/variables.css">
+  <link rel="stylesheet" href="/static/css/main.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ══ SIDEBAR ══════════════════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 20 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <path d="M1 8h2M5 5.5v5M9 2v12M13 5.5v5M17 3.5v9M19 8h-2"/>
+          </svg>
+        </div>
+        <span class="logo-text">AI Voice Detector</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-view="dashboard">
+        <svg data-lucide="layout-dashboard" class="nav-icon"></svg>
+        <span>Dashboard</span>
+      </button>
+      <button class="nav-item" data-view="history">
+        <svg data-lucide="clock" class="nav-icon"></svg>
+        <span>History</span>
+      </button>
+      <button class="nav-item" data-view="insights">
+        <svg data-lucide="bar-chart-2" class="nav-icon"></svg>
+        <span>Insights</span>
+      </button>
+      <button class="nav-item" data-view="settings">
+        <svg data-lucide="settings" class="nav-icon"></svg>
+        <span>Settings</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <p class="sidebar-credit">Built by <span>~Pulind Gadhia</span></p>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ═════════════════════════════════════ -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <button class="topbar-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">
+        <svg data-lucide="menu"></svg>
+      </button>
+      <span class="topbar-title" id="page-title">Dashboard</span>
+      <div class="topbar-spacer"></div>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="theme-toggle" title="Toggle dark mode">
+          <svg data-lucide="moon" id="theme-icon"></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+      <!-- ══ DASHBOARD VIEW (two-column) ════════════ -->
+      <div class="view active" id="view-dashboard">
+        <div class="dash-grid">
+
+          <!-- ── LEFT: Hero + Upload ── -->
+          <div class="dash-left">
+
+            <!-- Hero -->
+            <div class="hero">
+              <span class="hero-label">AI AUDIO ANALYSIS</span>
+              <h1 class="hero-h1">Every Voice Has a Story.</h1>
+              <p class="hero-h2">Verify Its Origin.</p>
+              <p class="hero-desc">Analyze audio recordings to identify whether a voice is human or AI-generated.</p>
+            </div>
+
+            <!-- Upload card -->
+            <div class="upload-card" id="upload-card">
+              <input type="file" id="file-input" accept="audio/*" style="display:none">
+
+              <!-- Analyzing overlay -->
+              <div id="s-analyzing" class="hidden">
+                <div class="analyzing-block">
+                  <div class="pulse-wrap">
+                    <div class="pulse-circle"></div>
+                    <div class="pulse-circle delay1"></div>
+                    <div class="pulse-circle delay2"></div>
+                    <div class="pulse-core">
+                      <svg data-lucide="cpu" style="width:14px;height:14px"></svg>
+                    </div>
+                  </div>
+                  <p class="analyzing-label">Analyzing audio…</p>
+                  <p class="analyzing-sub" id="analyzing-name">—</p>
+                </div>
+              </div>
+
+              <!-- Tab wrapper -->
+              <div id="tabs-wrap">
+
+                <!-- Tab bar -->
+                <div class="upload-tab-bar">
+                  <button type="button" class="upload-tab active" data-tab="upload">
+                    <svg data-lucide="upload" style="width:13px;height:13px"></svg>
+                    Upload File
+                  </button>
+                  <button type="button" class="upload-tab" data-tab="record">
+                    <svg data-lucide="mic" style="width:13px;height:13px"></svg>
+                    Record Audio
+                  </button>
+                </div>
+
+                <!-- Upload tab -->
+                <div id="tab-upload">
+
+                  <div id="s-default">
+                    <label for="file-input" class="drop-zone" id="drop-zone">
+                      <!-- Mini waveform SVG decoration -->
+                      <svg class="dz-wave" viewBox="0 0 120 32" fill="none" preserveAspectRatio="xMidYMid meet">
+                        <rect x="4"  y="12" width="4" height="8"  rx="2" fill="currentColor" opacity=".15"/>
+                        <rect x="12" y="8"  width="4" height="16" rx="2" fill="currentColor" opacity=".2"/>
+                        <rect x="20" y="4"  width="4" height="24" rx="2" fill="currentColor" opacity=".3"/>
+                        <rect x="28" y="8"  width="4" height="16" rx="2" fill="currentColor" opacity=".25"/>
+                        <rect x="36" y="11" width="4" height="10" rx="2" fill="currentColor" opacity=".18"/>
+                        <rect x="44" y="6"  width="4" height="20" rx="2" fill="currentColor" opacity=".28"/>
+                        <rect x="52" y="2"  width="4" height="28" rx="2" fill="currentColor" opacity=".35"/>
+                        <rect x="60" y="6"  width="4" height="20" rx="2" fill="currentColor" opacity=".28"/>
+                        <rect x="68" y="10" width="4" height="12" rx="2" fill="currentColor" opacity=".2"/>
+                        <rect x="76" y="5"  width="4" height="22" rx="2" fill="currentColor" opacity=".3"/>
+                        <rect x="84" y="9"  width="4" height="14" rx="2" fill="currentColor" opacity=".22"/>
+                        <rect x="92" y="12" width="4" height="8"  rx="2" fill="currentColor" opacity=".16"/>
+                        <rect x="100" y="7" width="4" height="18" rx="2" fill="currentColor" opacity=".25"/>
+                        <rect x="108" y="11" width="4" height="10" rx="2" fill="currentColor" opacity=".18"/>
+                        <rect x="116" y="14" width="4" height="4"  rx="2" fill="currentColor" opacity=".12"/>
+                      </svg>
+                      <div class="dz-icon-wrap">
+                        <svg data-lucide="upload-cloud" style="width:32px;height:32px"></svg>
+                      </div>
+                      <h3 class="dz-heading">Upload Audio for Analysis</h3>
+                      <p class="dz-sub">Drag and drop or click to browse your files</p>
+                      <div class="dz-cta">
+                        <svg data-lucide="folder-open" style="width:14px;height:14px"></svg>
+                        Choose Audio File
+                      </div>
+                      <p class="dz-formats">WAV · MP3 · M4A · OGG · FLAC · up to 100 MB</p>
+                    </label>
+                  </div>
+
+                  <div id="s-selected" class="hidden" style="padding:20px 22px">
+                    <div class="file-chip">
+                      <div class="file-chip-icon">
+                        <svg data-lucide="file-audio-2" style="width:16px;height:16px"></svg>
+                      </div>
+                      <div class="file-chip-body">
+                        <span class="file-chip-name" id="sel-name">—</span>
+                        <span class="file-chip-meta" id="sel-meta">—</span>
+                      </div>
+                      <button type="button" class="btn-ghost-sm" id="btn-remove">
+                        <svg data-lucide="x" style="width:13px;height:13px"></svg>
+                        Remove
+                      </button>
+                    </div>
+                    <audio id="audio-player" controls style="display:block;width:100%;height:36px;margin-top:14px"></audio>
+                    <div class="action-row">
+                      <button type="button" class="btn-black" id="btn-analyze">
+                        <svg data-lucide="search" style="width:14px;height:14px"></svg>
+                        Analyze Audio
+                      </button>
+                      <button type="button" class="btn-outline" id="btn-replace">Replace</button>
+                    </div>
+                  </div>
+
+                </div><!-- /tab-upload -->
+
+                <!-- Record tab -->
+                <div id="tab-record" class="hidden">
+
+                  <div id="r-idle">
+                    <div class="rec-idle-body">
+                      <button type="button" class="mic-btn" id="btn-start-rec">
+                        <svg data-lucide="mic" style="width:26px;height:26px"></svg>
+                      </button>
+                      <p class="rec-hint">Click to start recording</p>
+                      <p class="rec-hint-sub">Uses your device microphone · Max 5 minutes</p>
+                    </div>
+                  </div>
+
+                  <div id="r-recording" class="hidden">
+                    <div class="rec-active-body">
+                      <div class="rec-wave">
+                        <span class="rbar"></span><span class="rbar"></span>
+                        <span class="rbar"></span><span class="rbar"></span>
+                        <span class="rbar"></span><span class="rbar"></span>
+                        <span class="rbar"></span><span class="rbar"></span>
+                        <span class="rbar"></span><span class="rbar"></span>
+                        <span class="rbar"></span><span class="rbar"></span>
+                      </div>
+                      <div class="rec-timer-row">
+                        <span class="rec-dot"></span>
+                        <span class="rec-timer" id="rec-timer">0:00</span>
+                      </div>
+                      <button type="button" class="btn-stop-rec" id="btn-stop-rec">
+                        <svg data-lucide="square" style="width:13px;height:13px"></svg>
+                        Stop Recording
+                      </button>
+                    </div>
+                  </div>
+
+                  <div id="r-ready" class="hidden" style="padding:20px 22px">
+                    <div class="file-chip">
+                      <div class="file-chip-icon">
+                        <svg data-lucide="mic" style="width:16px;height:16px"></svg>
+                      </div>
+                      <div class="file-chip-body">
+                        <span class="file-chip-name" id="rec-fname">Recording</span>
+                        <span class="file-chip-meta" id="rec-meta">—</span>
+                      </div>
+                      <button type="button" class="btn-ghost-sm" id="btn-rec-discard">
+                        <svg data-lucide="trash-2" style="width:13px;height:13px"></svg>
+                        Discard
+                      </button>
+                    </div>
+                    <audio id="rec-player" controls style="display:block;width:100%;height:36px;margin-top:14px"></audio>
+                    <div class="action-row">
+                      <button type="button" class="btn-black" id="btn-rec-analyze">
+                        <svg data-lucide="search" style="width:14px;height:14px"></svg>
+                        Analyze Recording
+                      </button>
+                      <button type="button" class="btn-outline" id="btn-rec-redo">Record Again</button>
+                    </div>
+                  </div>
+
+                </div><!-- /tab-record -->
+              </div><!-- /tabs-wrap -->
+            </div><!-- /upload-card -->
+
+            <!-- Result card -->
+            <div class="result-card hidden" id="result-area">
+              <div class="result-card-top">
+                <div class="result-left">
+                  <span class="result-badge" id="res-badge">—</span>
+                  <span class="result-conf" id="res-conf"></span>
+                </div>
+                <button type="button" class="btn-ghost-sm" onclick="dismissResult()">
+                  <svg data-lucide="x" style="width:13px;height:13px"></svg>
+                  Dismiss
+                </button>
+              </div>
+              <div class="result-meta-grid" id="result-meta"></div>
+              <div id="res-indicators" class="result-indicators"></div>
+              <div class="result-card-footer">
+                <button type="button" class="btn-outline" onclick="dismissResult()">Analyze another file</button>
+              </div>
+            </div>
+
+          </div><!-- /dash-left -->
+
+          <!-- ── RIGHT: Stats + Recent ── -->
+          <div class="dash-right">
+
+            <!-- 4 Stat boxes in 2×2 grid -->
+            <div class="right-section-title">Analytics</div>
+            <div class="stats-grid-2x2">
+              <div class="stat-box-sm">
+                <div class="stat-box-label">Total Analyses</div>
+                <div class="stat-box-val" id="stat-total">—</div>
+              </div>
+              <div class="stat-box-sm">
+                <div class="stat-box-label">Human Detected</div>
+                <div class="stat-box-val" id="stat-human">—</div>
+              </div>
+              <div class="stat-box-sm stat-ai-box">
+                <div class="stat-box-label">AI Detected</div>
+                <div class="stat-box-val" id="stat-ai">—</div>
+              </div>
+              <div class="stat-box-sm">
+                <div class="stat-box-label">Avg Processing</div>
+                <div class="stat-box-val stat-small-val" id="stat-avgtime">—</div>
+              </div>
+            </div>
+
+            <!-- Recent analyses -->
+            <div class="right-section-title" style="margin-top:20px">
+              Recent Analyses
+              <button class="btn-link" onclick="switchView('history')">
+                View all <svg data-lucide="arrow-right" style="width:12px;height:12px;display:inline;vertical-align:middle"></svg>
+              </button>
+            </div>
+
+            <!-- Search + filter -->
+            <div class="recent-controls">
+              <input type="text" id="recent-search" class="input-field-sm" placeholder="Search…" autocomplete="off">
+              <select id="recent-filter" class="input-field-sm" style="width:auto;cursor:pointer">
+                <option value="">All</option>
+                <option value="Human">Human</option>
+                <option value="AI">AI</option>
+                <option value="Music">Music</option>
+              </select>
+            </div>
+
+            <div id="recent-list">
+              <div class="empty-zone"><p>Your analyzed files will appear here.</p></div>
+            </div>
+
+          </div><!-- /dash-right -->
+
+        </div><!-- /dash-grid -->
+      </div><!-- /view-dashboard -->
+
+
+      <!-- ══ HISTORY VIEW ════════════════════════════ -->
+      <div class="view" id="view-history">
+        <div class="full-page-body">
+          <div class="page-heading">
+            <h1>History</h1>
+            <p>All voice detection analyses from your database</p>
+          </div>
+          <div class="toolbar">
+            <input type="text" id="history-search" class="input-field" placeholder="Search filename…" autocomplete="off">
+            <select id="history-filter" class="input-field" style="width:auto;cursor:pointer">
+              <option value="">All results</option>
+              <option value="Human">Human</option>
+              <option value="AI">AI Generated</option>
+              <option value="Music">Music / Beats</option>
+              <option value="Low">Low Confidence</option>
+            </select>
+            <select id="history-sort" class="input-field" style="width:auto;cursor:pointer">
+              <option value="desc">Newest first</option>
+              <option value="asc">Oldest first</option>
+            </select>
+            <button type="button" class="btn-ghost-sm btn-danger-ghost" onclick="clearHistory()">
+              <svg data-lucide="trash-2" style="width:13px;height:13px"></svg>
+              Clear all
+            </button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Filename</th>
+                  <th>Date</th>
+                  <th>Result</th>
+                  <th>Confidence</th>
+                  <th>Duration</th>
+                  <th>Processing</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="history-tbody">
+                <tr><td colspan="7" class="table-empty">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ INSIGHTS VIEW ══════════════════════════ -->
+      <div class="view" id="view-insights">
+        <div class="full-page-body">
+          <div class="page-heading">
+            <h1>Insights</h1>
+            <p>Analytics from your detection history</p>
+          </div>
+          <div class="stats-row">
+            <div class="stat-box">
+              <span class="stat-label">Total analyses</span>
+              <span class="stat-value" id="ins-total">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Human</span>
+              <span class="stat-value" id="ins-human">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">AI detected</span>
+              <span class="stat-value" id="ins-ai">0</span>
+            </div>
+          </div>
+          <div class="chart-grid">
+            <div class="section-card">
+              <div class="section-card-header"><span class="section-card-title">Classification breakdown</span></div>
+              <div style="display:flex;justify-content:center;padding:8px 20px 20px">
+                <canvas id="donut-chart" style="max-height:200px;max-width:200px"></canvas>
+              </div>
+            </div>
+            <div class="section-card">
+              <div class="section-card-header"><span class="section-card-title">Analyses over time</span></div>
+              <div style="padding:8px 20px 20px;height:224px">
+                <canvas id="timeline-chart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SETTINGS VIEW ══════════════════════════ -->
+      <div class="view" id="view-settings">
+        <div class="full-page-body" style="max-width:680px">
+          <div class="page-heading">
+            <h1>Settings</h1>
+            <p>Configuration and system information</p>
+          </div>
+          <div class="settings-group">
+            <h2 class="settings-group-title">Backend</h2>
+            <div class="settings-list">
+              <div class="settings-row">
+                <div class="settings-row-body">
+                  <span class="settings-row-label">API Server</span>
+                  <span class="settings-row-desc">Flask — all processing is local, no data leaves your device</span>
+                </div>
+                <code>:5001</code>
+              </div>
+              <div class="settings-row">
+                <div class="settings-row-body">
+                  <span class="settings-row-label">Database</span>
+                  <span class="settings-row-desc">SQLite history database, stored locally</span>
+                </div>
+                <code>data/history.db</code>
+              </div>
+              <div class="settings-row">
+                <div class="settings-row-body">
+                  <span class="settings-row-label">Primary model</span>
+                  <span class="settings-row-desc">Fine-tuned Wav2Vec2 deepfake voice detector, cached via HuggingFace</span>
+                </div>
+                <code>~360 MB</code>
+              </div>
+            </div>
+          </div>
+          <div class="settings-group">
+            <h2 class="settings-group-title">Privacy</h2>
+            <div class="settings-list">
+              <div class="settings-row">
+                <div class="settings-row-body">
+                  <span class="settings-row-label">Audio storage</span>
+                  <span class="settings-row-desc">Audio files are deleted immediately after analysis. No audio stored persistently.</span>
+                </div>
+              </div>
+              <div class="settings-row">
+                <div class="settings-row-body">
+                  <span class="settings-row-label">Supported formats</span>
+                  <span class="settings-row-desc">WAV · MP3 · M4A · OGG · FLAC · AAC · up to 100 MB</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="settings-group">
+            <h2 class="settings-group-title">About</h2>
+            <div class="settings-list">
+              <div class="settings-row">
+                <div class="settings-row-body">
+                  <span class="settings-row-label">AI Voice Detector</span>
+                  <span class="settings-row-desc">Every Voice Has a Story. Verify Its Origin.</span>
+                </div>
+                <code>v2.0</code>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app-shell -->
+
+<div class="toast-container" id="toast-container"></div>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/app.js"></script>
+</body>
+</html>
